@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test for WorkflowX</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        input, textarea {
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CORS Test for WorkflowX API</h1>
+    
+    <div>
+        <label for="apiUrl">API URL:</label>
+        <input type="text" id="apiUrl" value="http://localhost:5000/api/v1" />
+    </div>
+
+    <h2>Login Test</h2>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="test@example.com" />
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="password123" />
+        
+        <button onclick="testLogin()">Test Login</button>
+    </div>
+
+    <h2>Register Test</h2>
+    <div>
+        <label for="regEmail">Email:</label>
+        <input type="email" id="regEmail" value="newuser@example.com" />
+        
+        <label for="regPassword">Password:</label>
+        <input type="password" id="regPassword" value="password123" />
+        
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" value="John" />
+        
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" value="Doe" />
+        
+        <button onclick="testRegister()">Test Register</button>
+    </div>
+
+    <h2>Health Check</h2>
+    <button onclick="testHealth()">Test Health Endpoint</button>
+
+    <div class="result">
+        <h3>Results:</h3>
+        <pre id="result">Run a test to see results...</pre>
+    </div>
+
+    <script>
+        // Helper function to display results
+        function displayResult(result) {
+            const resultElement = document.getElementById('result');
+            if (typeof result === 'object') {
+                resultElement.textContent = JSON.stringify(result, null, 2);
+            } else {
+                resultElement.textContent = result;
+            }
+        }
+
+        // Test login
+        async function testLogin() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                displayResult(`Sending login request to ${apiUrl}/auth/login...`);
+                
+                const response = await fetch(`${apiUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                displayResult({
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    data
+                });
+            } catch (error) {
+                displayResult(`Error: ${error.message}`);
+                console.error('Login test error:', error);
+            }
+        }
+
+        // Test register
+        async function testRegister() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            try {
+                displayResult(`Sending register request to ${apiUrl}/auth/register...`);
+                
+                const response = await fetch(`${apiUrl}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password, firstName, lastName })
+                });
+
+                const data = await response.json();
+                displayResult({
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    data
+                });
+            } catch (error) {
+                displayResult(`Error: ${error.message}`);
+                console.error('Register test error:', error);
+            }
+        }
+
+        // Test health endpoint
+        async function testHealth() {
+            const apiUrl = document.getElementById('apiUrl').value;
+
+            try {
+                displayResult(`Sending request to ${apiUrl}/health...`);
+                
+                const response = await fetch(`${apiUrl}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                displayResult({
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    data
+                });
+            } catch (error) {
+                displayResult(`Error: ${error.message}`);
+                console.error('Health test error:', error);
+            }
+        }
+    </script>
+</body>
+</html> 
